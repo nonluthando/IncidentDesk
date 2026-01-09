@@ -1,28 +1,30 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>IncidentDesk | Incident</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
-    <h1>{{ incident.title }}</h1>
+{% extends "base.html" %}
+{% block title %}IncidentDesk | Incident{% endblock %}
 
-    <p><strong>Description:</strong> {{ incident.description }}</p>
-    <p><strong>Severity:</strong> {{ incident.severity }}</p>
+{% block content %}
+<h2>{{ incident.title }}</h2>
+
+<div class="incident-card">
+    <p><strong>Description:</strong><br>{{ incident.description }}</p>
+
+    <p>
+        <strong>Severity:</strong>
+        <span class="badge {{ incident.severity }}">
+            {{ incident.severity }}
+        </span>
+    </p>
+
     <p><strong>Status:</strong> {{ incident.status }}</p>
     <p><strong>Created:</strong> {{ incident.created_at }}</p>
+</div>
 
-    <h3>Update Status</h3>
-    <form method="post">
-        <select name="status">
-            <option value="OPEN" {% if incident.status == "OPEN" %}selected{% endif %}>OPEN</option>
-            <option value="INVESTIGATING" {% if incident.status == "INVESTIGATING" %}selected{% endif %}>INVESTIGATING</option>
-            <option value="RESOLVED" {% if incident.status == "RESOLVED" %}selected{% endif %}>RESOLVED</option>
-        </select>
-        <button type="submit">Update</button>
-    </form>
-
-    <br>
-    <a href="{{ url_for('list_incidents') }}">Back to incidents</a>
-</body>
-</html>
+<h3>Update Status</h3>
+<form method="post" class="form-inline">
+    <select name="status">
+        <option value="OPEN" {% if incident.status == "OPEN" %}selected{% endif %}>OPEN</option>
+        <option value="INVESTIGATING" {% if incident.status == "INVESTIGATING" %}selected{% endif %}>INVESTIGATING</option>
+        <option value="RESOLVED" {% if incident.status == "RESOLVED" %}selected{% endif %}>RESOLVED</option>
+    </select>
+    <button type="submit">Update</button>
+</form>
+{% endblock %}
