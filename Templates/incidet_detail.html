@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>IncidentDesk | Incident</title>
+</head>
+<body>
+    <h1>{{ incident.title }}</h1>
+
+    <p><strong>Description:</strong> {{ incident.description }}</p>
+    <p><strong>Severity:</strong> {{ incident.severity }}</p>
+    <p><strong>Status:</strong> {{ incident.status }}</p>
+    <p><strong>Created:</strong> {{ incident.created_at }}</p>
+
+    <h3>Update Status</h3>
+    <form method="post">
+        <select name="status">
+            <option value="OPEN" {% if incident.status == "OPEN" %}selected{% endif %}>OPEN</option>
+            <option value="INVESTIGATING" {% if incident.status == "INVESTIGATING" %}selected{% endif %}>INVESTIGATING</option>
+            <option value="RESOLVED" {% if incident.status == "RESOLVED" %}selected{% endif %}>RESOLVED</option>
+        </select>
+        <button type="submit">Update</button>
+    </form>
+
+    <br>
+    <a href="{{ url_for('list_incidents') }}">Back to incidents</a>
+</body>
+</html>
