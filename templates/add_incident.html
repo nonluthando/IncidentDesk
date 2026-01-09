@@ -1,30 +1,23 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>IncidentDesk | Add Incident</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
-    <h1>Add Incident</h1>
+{% extends "base.html" %}
+{% block title %}IncidentDesk | Add Incident{% endblock %}
 
-    <form method="post">
-        <label>Title</label><br>
-        <input type="text" name="title" required><br><br>
+{% block content %}
+<h2>New Incident</h2>
 
-        <label>Description</label><br>
-        <textarea name="description" rows="4" required></textarea><br><br>
+<form method="post" class="form">
+    <label>Title</label>
+    <input type="text" name="title" required>
 
-        <label>Severity</label><br>
-        <select name="severity" required>
-            <option value="LOW">LOW</option>
-            <option value="MEDIUM">MEDIUM</option>
-            <option value="HIGH">HIGH</option>
-        </select><br><br>
+    <label>Description</label>
+    <textarea name="description" rows="4" required></textarea>
 
-        <button type="submit">Create Incident</button>
-    </form>
+    <label>Severity</label>
+    <select name="severity" required>
+        <option value="LOW">LOW</option>
+        <option value="MEDIUM">MEDIUM</option>
+        <option value="HIGH">HIGH</option>
+    </select>
 
-    <br>
-    <a href="{{ url_for('list_incidents') }}">Back to incidents</a>
-</body>
-</html>
+    <button type="submit">Create Incident</button>
+</form>
+{% endblock %}
