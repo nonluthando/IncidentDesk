@@ -1,1 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>IncidentDesk | Incidents</title>
+</head>
+<body>
+    <h1>IncidentDesk</h1>
 
+    <a href="{{ url_for('add_incident') }}">Add Incident</a>
+
+    <table border="1" cellpadding="6">
+        <tr>
+            <th>Title</th>
+            <th>Severity</th>
+            <th>Status</th>
+            <th>Created</th>
+            <th>View</th>
+        </tr>
+        {% for incident in incidents %}
+        <tr>
+            <td>{{ incident.title }}</td>
+            <td>{{ incident.severity }}</td>
+            <td>{{ incident.status }}</td>
+            <td>{{ incident.created_at }}</td>
+            <td>
+                <a href="{{ url_for('incident_detail', incident_id=incident.id) }}">View</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
