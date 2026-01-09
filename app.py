@@ -3,7 +3,7 @@ from datetime import datetime
 import sqlite3
 
 app = Flask(__name__)
-DATABASE = "pulseops.db"
+DATABASE = "incidentdesk.db"
 
 
 def get_db_connection():
@@ -39,7 +39,7 @@ def index():
 def list_incidents():
     conn = get_db_connection()
     incidents = conn.execute(
-        "SELECT * FROM incidents ORDER BY severity DESC, created_at DESC"
+        "SELECT * FROM incidents ORDER BY created_at DESC"
     ).fetchall()
     conn.close()
     return render_template("incidents.html", incidents=incidents)
@@ -55,13 +55,7 @@ def add_incident():
         conn = get_db_connection()
         conn.execute(
             "INSERT INTO incidents (title, description, severity, status, created_at) VALUES (?, ?, ?, ?, ?)",
-            (
-                title,
-                description,
-                severity,
-                "OPEN",
-                datetime.utcnow().isoformat(),
-            ),
+            (title, description, severity, "OPEN", datetime.utcnow().isoformat())
         )
         conn.commit()
         conn.close()
@@ -79,12 +73,13 @@ def incident_detail(incident_id):
         new_status = request.form["status"]
         conn.execute(
             "UPDATE incidents SET status = ? WHERE id = ?",
-            (new_status, incident_id),
+            (new_status, incident_id)
         )
         conn.commit()
 
     incident = conn.execute(
-        "SELECT * FROM incidents WHERE id = ?", (incident_id,)
+        "SELECT * FROM incidents WHERE id = ?",
+        (incident_id,)
     ).fetchone()
     conn.close()
 
