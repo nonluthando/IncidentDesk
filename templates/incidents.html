@@ -15,6 +15,30 @@
         {% endfor %}
     </select>
 </form>
+<form method="get">
+    <label>Status:</label>
+    <select name="status">
+        <option value="">All</option>
+        {% for s in statuses %}
+        <option value="{{ s }}" {% if s == current_status %}selected{% endif %}>
+            {{ s }}
+        </option>
+        {% endfor %}
+    </select>
+
+    <label>Severity:</label>
+    <select name="severity">
+        <option value="">All</option>
+        {% for sev in severities %}
+        <option value="{{ sev }}" {% if sev == current_severity %}selected{% endif %}>
+            {{ sev }}
+        </option>
+        {% endfor %}
+    </select>
+
+    <button type="submit">Filter</button>
+</form>
+
 
 {% if incidents %}
 <table>
