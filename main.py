@@ -1,4 +1,6 @@
-from fastapi import Request
+from fastapi import Request, Depends, Form
+from fastapi.responses import RedirectResponse
+
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from fastapi import FastAPI, Depends, HTTPException, Query
@@ -75,3 +77,23 @@ def ui_list_incidents(
             "statuses": STATUSES
         }
     )
+
+@app.post("/add")
+def ui_add_incident_post(
+    title: str = Form(...),
+    description: str = Form(...),
+    severity: str = Form(...),
+    conn=Depends(get_db)
+):
+    class TempIncident:
+        def __init__(self, title, description, severity):
+            self.title = title
+            self.description = description
+            self.severity = severity
+
+    crud.create_incident(
+        conn,
+        TempIncident(title, description, severity)
+    )
+
+    return RedirectResponse("/", status_code=303)
