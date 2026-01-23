@@ -1,6 +1,6 @@
 from datetime import datetime
 
-# ===== API version (Pydantic model) =====
+# ---------- CREATE (API) ----------
 def create_incident(conn, incident):
     conn.execute(
         """
@@ -18,7 +18,7 @@ def create_incident(conn, incident):
     conn.commit()
 
 
-# ===== UI version (HTML form) =====
+# ---------- CREATE (UI) ----------
 def create_incident_simple(conn, title, description, severity):
     conn.execute(
         """
@@ -30,16 +30,22 @@ def create_incident_simple(conn, title, description, severity):
     conn.commit()
 
 
-def get_incidents(conn, status=None):
-    if status:
-        return conn.execute(
-            "SELECT * FROM incidents WHERE status = ? ORDER BY created_at DESC",
-            (status,)
-        ).fetchall()
+# ---------- READ (with filters) ----------
+def get_incidents(conn, status=None, severity=None):
+    query = "SELECT * FROM incidents WHERE 1=1"
+    params = []
 
-    return conn.execute(
-        "SELECT * FROM incidents ORDER BY created_at DESC"
-    ).fetchall()
+    if status:
+        query += " AND status = ?"
+        params.append(status)
+
+    if severity:
+        query += " AND severity = ?"
+        params.append(severity)
+
+    query += " ORDER BY created_at DESC"
+
+    return conn.execute(query, params).fetchall()
 
 
 def get_incident(conn, incident_id):
@@ -49,9 +55,19 @@ def get_incident(conn, incident_id):
     ).fetchone()
 
 
+# ---------- UPDATE ----------
 def update_status(conn, incident_id, status):
     conn.execute(
         "UPDATE incidents SET status = ? WHERE id = ?",
         (status, incident_id)
+    )
+    conn.commit()
+
+
+# ---------- DELETE ----------
+def delete_incident(conn, incident_id):
+    conn.execute(
+        "DELETE FROM incidents WHERE id = ?",
+        (incident_id,)
     )
     conn.commit()
