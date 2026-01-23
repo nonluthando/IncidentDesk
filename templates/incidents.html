@@ -47,6 +47,7 @@
         <th>Severity</th>
         <th>Status</th>
         <th>Created</th>
+        <th>Actions</th>
     </tr>
 
     {% for incident in incidents %}
@@ -62,6 +63,11 @@
                 {{ incident["status"] }}
             </span>
         </td>
+        <td>
+  <form method="post" action="/delete/{{ incident['id'] }}">
+    <button type="submit">Delete</button>
+  </form>
+</td>
         <td>
             {{ incident["created_at"][:16].replace("T", " ") }}
         </td>
