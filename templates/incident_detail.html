@@ -1,30 +1,42 @@
 {% extends "base.html" %}
-{% block title %}IncidentDesk | Incident{% endblock %}
 
 {% block content %}
-<h2>{{ incident.title }}</h2>
+<h2>{{ incident["title"] }}</h2>
 
-<div class="incident-card">
-    <p><strong>Description:</strong><br>{{ incident.description }}</p>
+<p><strong>Description:</strong></p>
+<p>{{ incident["description"] }}</p>
 
-    <p>
-        <strong>Severity:</strong>
-        <span class="badge {{ incident.severity }}">
-            {{ incident.severity }}
-        </span>
-    </p>
+<p>
+    <strong>Severity:</strong>
+    <span class="severity-{{ incident['severity'] | lower }}">
+        {{ incident["severity"] }}
+    </span>
+</p>
 
-    <p><strong>Status:</strong> {{ incident.status }}</p>
-    <p><strong>Created:</strong> {{ incident.created_at }}</p>
-</div>
+<p>
+    <strong>Status:</strong>
+    <span class="status {{ incident['status'] | lower }}">
+        {{ incident["status"] }}
+    </span>
+</p>
+
+<p>
+    <strong>Created:</strong>
+    {{ incident["created_at"][:16].replace("T", " ") }}
+</p>
+
+<hr>
 
 <h3>Update Status</h3>
-<form method="post" class="form-inline">
+
+<form method="post">
     <select name="status">
-        <option value="OPEN" {% if incident.status == "OPEN" %}selected{% endif %}>OPEN</option>
-        <option value="INVESTIGATING" {% if incident.status == "INVESTIGATING" %}selected{% endif %}>INVESTIGATING</option>
-        <option value="RESOLVED" {% if incident.status == "RESOLVED" %}selected{% endif %}>RESOLVED</option>
+        <option {% if incident["status"] == "OPEN" %}selected{% endif %}>OPEN</option>
+        <option {% if incident["status"] == "IN_PROGRESS" %}selected{% endif %}>IN_PROGRESS</option>
+        <option {% if incident["status"] == "RESOLVED" %}selected{% endif %}>RESOLVED</option>
     </select>
+
     <button type="submit">Update</button>
 </form>
+
 {% endblock %}
