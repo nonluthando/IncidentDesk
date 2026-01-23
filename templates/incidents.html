@@ -3,6 +3,19 @@
 {% block content %}
 <h2>All Incidents</h2>
 
+<form method="get" class="filter-form">
+    <label for="status">Filter by status:</label>
+    <select name="status" onchange="this.form.submit()">
+        <option value="">All</option>
+
+        {% for s in statuses %}
+        <option value="{{ s }}" {% if s == current_status %}selected{% endif %}>
+            {{ s.replace("_", " ") }}
+        </option>
+        {% endfor %}
+    </select>
+</form>
+
 {% if incidents %}
 <table>
     <tr>
