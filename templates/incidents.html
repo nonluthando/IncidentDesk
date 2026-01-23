@@ -1,8 +1,7 @@
 {% extends "base.html" %}
-{% block title %}IncidentDesk | Incidents{% endblock %}
 
 {% block content %}
-<h2>Incidents</h2>
+<h2>All Incidents</h2>
 
 {% if incidents %}
 <table>
@@ -11,28 +10,29 @@
         <th>Severity</th>
         <th>Status</th>
         <th>Created</th>
-        <th></th>
     </tr>
+
     {% for incident in incidents %}
-    <tr>
-        <td>{{ incident.title }}</td>
+    <tr class="severity-{{ incident['severity'] | lower }}">
         <td>
-            <span class="badge {{ incident.severity }}">
-                {{ incident.severity }}
+            <a href="/incidents/{{ incident['id'] }}">
+                {{ incident["title"] }}
+            </a>
+        </td>
+        <td>{{ incident["severity"] }}</td>
+        <td>
+            <span class="status {{ incident['status'] | lower }}">
+                {{ incident["status"] }}
             </span>
         </td>
-        <td>{{ incident.status }}</td>
-        <td>{{ incident.created_at }}</td>
         <td>
-            <a href="{{ url_for('incident_detail', incident_id=incident.id) }}">
-                View
-            </a>
+            {{ incident["created_at"][:16].replace("T", " ") }}
         </td>
     </tr>
     {% endfor %}
 </table>
 {% else %}
-<p class="empty">No incidents logged.</p>
+<p>No incidents logged yet.</p>
 {% endif %}
 
 {% endblock %}
