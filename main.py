@@ -75,21 +75,28 @@ def list_incidents_api(
 ):
     incidents = crud.get_incidents(conn, status=status, severity=severity)
     return [dict(i) for i in incidents]
+@app.delete("/incidents/{incident_id}", status_code=204)
+def delete_incident_api(
+    incident_id: int,
+    conn=Depends(get_db)
+):
+    incident = crud.get_incident(conn, incident_id)
+    if not incident:
+        raise HTTPException(status_code=404, detail="Incident not found")
+
+    crud.delete_incident(conn, incident_id)
 
 # =========================
 # UI ROUTES (HTML)
 # =========================
-
 @app.get("/")
 def list_incidents_ui(
     request: Request,
     status: Optional[str] = None,
+    severity: Optional[str] = None,
     conn=Depends(get_db)
 ):
-    if status and status not in STATUSES:
-        status = None
-
-    incidents = crud.get_incidents(conn, status)
+    incidents = crud.get_incidents(conn, status=status, severity=severity)
 
     return templates.TemplateResponse(
         "incidents.html",
@@ -97,7 +104,9 @@ def list_incidents_ui(
             "request": request,
             "incidents": incidents,
             "current_status": status,
-            "statuses": STATUSES
+            "current_severity": severity,
+            "statuses": ["OPEN", "IN_PROGRESS", "RESOLVED"],
+            "severities": ["LOW", "MEDIUM", "HIGH", "CRITICAL"]
         }
     )
 
