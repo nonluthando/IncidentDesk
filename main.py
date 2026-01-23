@@ -1,14 +1,20 @@
+from fastapi import Request
+from fastapi.templating import Jinja2Templates
+from fastapi.staticfiles import StaticFiles
 from fastapi import FastAPI, Depends, HTTPException, Query
 from typing import List, Optional
 from database import get_db
-import crud, schemas
+
 from models import STATUSES
+import crud, schemas
 
 app = FastAPI(
     title="IncidentDesk",
     description="Internal incident tracking API",
     version="1.0.0"
 )
+templates = Jinja2Templates(directory="templates")
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 @app.post("/incidents", status_code=201)
 def create_incident(
@@ -48,3 +54,24 @@ def update_incident(
 
     crud.update_status(conn, incident_id, update.status)
     return {"message": "Incident status updated"}
+
+@app.get("/")
+def ui_list_incidents(
+    request: Request,
+    status: Optional[str] = None,
+    conn=Depends(get_db)
+):
+    if status and status not in STATUSES:
+        status = None  # fail safely
+
+    incidents = crud.get_incidents(conn, status)
+
+    return templates.TemplateResponse(
+        "incidents.html",
+        {
+            "request": request,
+            "incidents": incidents,
+            "current_status": status,
+            "statuses": STATUSES
+        }
+    )
