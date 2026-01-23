@@ -1,33 +1,38 @@
-from fastapi import Request, Depends, Form
+from fastapi import FastAPI, Request, Depends, Form, HTTPException, Query
 from fastapi.responses import RedirectResponse
-
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
-from fastapi import FastAPI, Depends, HTTPException, Query
 from typing import List, Optional
-from database import get_db
 
+from database import get_db
 from models import STATUSES
 import crud, schemas
 
 app = FastAPI(
     title="IncidentDesk",
-    description="Internal incident tracking API",
+    description="Internal incident tracking system",
     version="1.0.0"
 )
+
+# Templates & static files
 templates = Jinja2Templates(directory="templates")
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
+# =========================
+# API ROUTES (JSON)
+# =========================
+
 @app.post("/incidents", status_code=201)
-def create_incident(
+def create_incident_api(
     incident: schemas.IncidentCreate,
     conn=Depends(get_db)
 ):
     crud.create_incident(conn, incident)
     return {"message": "Incident logged successfully"}
 
+
 @app.get("/incidents", response_model=List[schemas.IncidentOut])
-def list_incidents(
+def list_incidents_api(
     status: Optional[str] = Query(None),
     conn=Depends(get_db)
 ):
@@ -37,15 +42,20 @@ def list_incidents(
     incidents = crud.get_incidents(conn, status)
     return [dict(i) for i in incidents]
 
+
 @app.get("/incidents/{incident_id}", response_model=schemas.IncidentOut)
-def get_incident(incident_id: int, conn=Depends(get_db)):
+def get_incident_api(
+    incident_id: int,
+    conn=Depends(get_db)
+):
     incident = crud.get_incident(conn, incident_id)
     if not incident:
         raise HTTPException(status_code=404, detail="Incident not found")
     return dict(incident)
 
+
 @app.patch("/incidents/{incident_id}")
-def update_incident(
+def update_incident_api(
     incident_id: int,
     update: schemas.IncidentUpdate,
     conn=Depends(get_db)
@@ -57,14 +67,18 @@ def update_incident(
     crud.update_status(conn, incident_id, update.status)
     return {"message": "Incident status updated"}
 
+# =========================
+# UI ROUTES (HTML)
+# =========================
+
 @app.get("/")
-def ui_list_incidents(
+def list_incidents_ui(
     request: Request,
     status: Optional[str] = None,
     conn=Depends(get_db)
 ):
     if status and status not in STATUSES:
-        status = None  # fail safely
+        status = None
 
     incidents = crud.get_incidents(conn, status)
 
@@ -78,22 +92,27 @@ def ui_list_incidents(
         }
     )
 
+
+@app.get("/add")
+def add_incident_form(request: Request):
+    return templates.TemplateResponse(
+        "add_incident.html",
+        {"request": request}
+    )
+
+
 @app.post("/add")
-def ui_add_incident_post(
+def add_incident_ui(
     title: str = Form(...),
     description: str = Form(...),
     severity: str = Form(...),
     conn=Depends(get_db)
 ):
-    class TempIncident:
-        def __init__(self, title, description, severity):
-            self.title = title
-            self.description = description
-            self.severity = severity
-
-    crud.create_incident(
+    crud.create_incident_simple(
         conn,
-        TempIncident(title, description, severity)
+        title=title,
+        description=description,
+        severity=severity
     )
 
     return RedirectResponse("/", status_code=303)
