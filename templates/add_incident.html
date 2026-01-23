@@ -1,23 +1,25 @@
 {% extends "base.html" %}
-{% block title %}IncidentDesk | Add Incident{% endblock %}
 
 {% block content %}
-<h2>New Incident</h2>
+<h2>Log New Incident</h2>
 
-<form method="post" class="form">
+<form method="post">
     <label>Title</label>
-    <input type="text" name="title" required>
+    <input name="title" required>
 
     <label>Description</label>
-    <textarea name="description" rows="4" required></textarea>
+    <textarea name="description" required></textarea>
 
     <label>Severity</label>
-    <select name="severity" required>
-        <option value="LOW">LOW</option>
-        <option value="MEDIUM">MEDIUM</option>
-        <option value="HIGH">HIGH</option>
+    <select name="severity">
+        <option>CRITICAL</option>
+        <option>HIGH</option>
+        <option>MEDIUM</option>
+        <option>LOW</option>
     </select>
 
-    <button type="submit">Create Incident</button>
+    <small>Severity indicates operational urgency.</small>
+
+    <button type="submit">Submit Incident</button>
 </form>
 {% endblock %}
