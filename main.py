@@ -67,6 +67,15 @@ def update_incident_api(
     crud.update_status(conn, incident_id, update.status)
     return {"message": "Incident status updated"}
 
+@app.get("/incidents", response_model=List[schemas.IncidentOut])
+def list_incidents_api(
+    status: Optional[str] = Query(None),
+    severity: Optional[str] = Query(None),
+    conn=Depends(get_db)
+):
+    incidents = crud.get_incidents(conn, status=status, severity=severity)
+    return [dict(i) for i in incidents]
+
 # =========================
 # UI ROUTES (HTML)
 # =========================
