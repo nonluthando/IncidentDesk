@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request, redirect, url_for
 from datetime import datetime
 import sqlite3
+from api import api_bp
+app.register_blueprint(api_bp)
 
 app = Flask(__name__)
 DATABASE = "incidentdesk.db"
